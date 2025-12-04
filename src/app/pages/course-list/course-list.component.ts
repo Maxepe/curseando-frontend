@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CoursesService } from '../../services/courses.service';
-import { CourseCardDTO, Difficulty } from '../../models/course.model';
+import { CourseCardDTO, Difficulty, DIFFICULTY_TRANSLATIONS } from '../../models/course.model';
 
 @Component({
   selector: 'app-course-list',
@@ -19,12 +19,18 @@ export class CourseListComponent implements OnInit {
   error: string | null = null;
   selectedDifficulty = 'ALL';
 
+  Difficulty = Difficulty;
+  
   difficulties = [
-    { value: 'ALL', label: 'All Levels' },
-    { value: 'BEGINNER', label: 'Beginner' },
-    { value: 'INTERMEDIATE', label: 'Intermediate' },
-    { value: 'ADVANCED', label: 'Advanced' }
+    { value: 'ALL', label: 'Todos los niveles' },
+    { value: Difficulty.BEGINNER, label: DIFFICULTY_TRANSLATIONS[Difficulty.BEGINNER] },
+    { value: Difficulty.INTERMEDIATE, label: DIFFICULTY_TRANSLATIONS[Difficulty.INTERMEDIATE] },
+    { value: Difficulty.ADVANCED, label: DIFFICULTY_TRANSLATIONS[Difficulty.ADVANCED] }
   ];
+
+  getDifficultyLabel(difficulty: Difficulty): string {
+    return DIFFICULTY_TRANSLATIONS[difficulty];
+  }
 
   constructor(
     private coursesService: CoursesService,

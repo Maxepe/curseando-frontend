@@ -50,8 +50,8 @@
             (keydown.enter)="viewCourse(course.id)"
           >
             <div class="card-header">
-              <span class="difficulty-badge" [ngClass]="getDifficultyClass(course.difficulty)">
-                {{ course.difficulty }}
+              <span class="difficulty-badge" [ngClass]="'difficulty-' + course.difficulty.toLowerCase()">
+                {{ getDifficultyLabel(course.difficulty) }}
               </span>
             </div>
 

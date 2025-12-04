@@ -4,6 +4,12 @@ export enum Difficulty {
   ADVANCED = 'ADVANCED'
 }
 
+export const DIFFICULTY_TRANSLATIONS: Record<Difficulty, string> = {
+  [Difficulty.BEGINNER]: 'Principiante',
+  [Difficulty.INTERMEDIATE]: 'Intermedio',
+  [Difficulty.ADVANCED]: 'Avanzado'
+};
+
 export interface CourseCardDTO {
   id: number;
   title: string;

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { CoursesService } from '../../services/courses.service';
-import { CourseDetailDTO, Difficulty } from '../../models/course.model';
+import { CourseDetailDTO, Difficulty, DIFFICULTY_TRANSLATIONS } from '../../models/course.model';
 import { environment } from '../../../environments/environment';
 import { EnrollmentFormComponent } from '../../components/enrollment-form/enrollment-form.component';
 
@@ -14,10 +14,16 @@ import { EnrollmentFormComponent } from '../../components/enrollment-form/enroll
   styleUrl: './course-detail.component.css'
 })
 export class CourseDetailComponent implements OnInit {
+  Difficulty = Difficulty;
+  
   course: CourseDetailDTO | null = null;
   loading = true;
   error: string | null = null;
   courseId: number | null = null;
+
+  getDifficultyLabel(difficulty: Difficulty): string {
+    return DIFFICULTY_TRANSLATIONS[difficulty];
+  }
 
   constructor(
     private route: ActivatedRoute,

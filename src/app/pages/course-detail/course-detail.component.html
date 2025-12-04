@@ -21,8 +21,8 @@
     <div *ngIf="course && !loading && !error" class="course-content">
       <div class="course-header">
         <div class="header-top">
-          <span class="difficulty-badge" [ngClass]="getDifficultyClass(course.difficulty)">
-            {{ course.difficulty }}
+          <span class="difficulty-badge" [ngClass]="'difficulty-' + course.difficulty.toLowerCase()">
+            {{ getDifficultyLabel(course.difficulty) }}
           </span>
           <div class="seats-indicator" [ngClass]="{
             'seats-full': isFull(),
