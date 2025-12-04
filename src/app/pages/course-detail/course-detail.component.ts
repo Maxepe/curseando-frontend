@@ -4,11 +4,12 @@ import { ActivatedRoute } from '@angular/router';
 import { CoursesService } from '../../services/courses.service';
 import { CourseDetailDTO, Difficulty } from '../../models/course.model';
 import { environment } from '../../../environments/environment';
+import { EnrollmentFormComponent } from '../../components/enrollment-form/enrollment-form.component';
 
 @Component({
   selector: 'app-course-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EnrollmentFormComponent],
   templateUrl: './course-detail.component.html',
   styleUrl: './course-detail.component.css'
 })
@@ -88,6 +89,23 @@ export class CourseDetailComponent implements OnInit {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
+    });
+  }
+
+  onEnrollmentSuccess(): void {
+    if (this.courseId) {
+      this.refreshCourseData(this.courseId);
+    }
+  }
+
+  private refreshCourseData(id: number): void {
+    this.coursesService.getCourse(id).subscribe({
+      next: (course) => {
+        this.course = course;
+      },
+      error: (err) => {
+        console.error('Error refreshing course data:', err);
+      }
     });
   }
 }

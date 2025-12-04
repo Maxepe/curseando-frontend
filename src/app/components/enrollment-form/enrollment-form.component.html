@@ -1,0 +1,53 @@
+<form [formGroup]="enrollmentForm" (ngSubmit)="onSubmit()" class="enrollment-form">
+  <!-- Success Message Alert -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    <span class="alert-icon">✓</span>
+    <span class="alert-text">{{ successMessage }}</span>
+  </div>
+
+  <!-- Error Message Alert -->
+  <div *ngIf="errorMessage" class="alert alert-error">
+    <span class="alert-icon">✕</span>
+    <span class="alert-text">{{ errorMessage }}</span>
+  </div>
+
+  <div class="form-group">
+    <label for="fullName">Nombre Completo *</label>
+    <input
+      type="text"
+      id="fullName"
+      formControlName="fullName"
+      placeholder="Ingresa tu nombre completo"
+      [class.error]="isFieldInvalid('fullName')"
+    />
+    <span class="error-message" *ngIf="isFieldInvalid('fullName')">
+      {{ getFieldError('fullName') }}
+    </span>
+  </div>
+
+  <div class="form-group">
+    <label for="email">Email *</label>
+    <input
+      type="email"
+      id="email"
+      formControlName="email"
+      placeholder="tu@email.com"
+      [class.error]="isFieldInvalid('email')"
+    />
+    <span class="error-message" *ngIf="isFieldInvalid('email')">
+      {{ getFieldError('email') }}
+    </span>
+  </div>
+
+  <button
+    type="submit"
+    class="btn btn-primary"
+    [disabled]="enrollmentForm.invalid || submitting || isFull">
+    <span *ngIf="submitting" class="btn-spinner"></span>
+    <span>{{ submitting ? 'Inscribiendo...' : (isFull ? 'Curso Completo' : 'Inscribirse') }}</span>
+  </button>
+
+  <p *ngIf="isFull" class="full-message">
+    Este curso no tiene cupos disponibles en este momento.
+  </p>
+</form>

@@ -110,9 +110,11 @@
               ></div>
             </div>
 
-            <div class="enrollment-form-placeholder">
-              <p class="placeholder-text">Aca va el enrollment form</p>
-            </div>
+            <app-enrollment-form
+              [courseId]="course.id"
+              [isFull]="isFull()"
+              (enrollmentSuccess)="onEnrollmentSuccess()">
+            </app-enrollment-form>
           </div>
         </div>
       </div>

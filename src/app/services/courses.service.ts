@@ -56,10 +56,7 @@ export class CoursesService {
     let errorMessage = 'An unexpected error occurred';
     let status = error.status || 0;
 
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = `Network error: ${error.error.message}`;
-    } else {
-      const body = error.error;
+    const body = error.error;
       const errorResponse: Partial<ErrorResponse> =
         body && typeof body === 'object' ? (body as Partial<ErrorResponse>) : {};
 
@@ -68,12 +65,6 @@ export class CoursesService {
       switch (status) {
         case 400:
           errorMessage = this.handleBadRequest(errorResponse);
-          break;
-        case 401:
-          errorMessage = 'Authentication required. Please log in again.';
-          break;
-        case 403:
-          errorMessage = 'You do not have permission to perform this action.';
           break;
         case 404:
           errorMessage = this.handleNotFound(errorResponse);
@@ -85,12 +76,11 @@ export class CoursesService {
           errorMessage = this.handleValidationError(errorResponse);
           break;
         case 500:
-          errorMessage = 'A server error occurred. Please try again later.';
+          errorMessage = 'Error del servidor. Intente en unos minutos.';
           break;
         default:
-          errorMessage = errorResponse.message || error.message || 'An unexpected error occurred';
+          errorMessage = errorResponse.message || error.message || 'Error inesperado';
       }
-    }
 
     console.error(`API Error [${status}]:`, errorMessage, error);
     return throwError(() => new Error(errorMessage));
@@ -98,33 +88,33 @@ export class CoursesService {
 
   private handleBadRequest(error: Partial<ErrorResponse>): string {
     if (error.error === 'Validation failed' && error.message) {
-      return `Validation error: ${error.message}`;
+      return `Error de validación: ${error.message}`;
     }
-    return error.message || 'Invalid request. Please check your input.';
+    return error.message || 'Solicitud inválida. Por favor verifica los datos ingresados.';
   }
 
   private handleNotFound(error: Partial<ErrorResponse>): string {
-    return error.message || 'The requested resource was not found.';
+    return error.message || 'El recurso solicitado no fue encontrado.';
   }
 
   private handleConflict(error: Partial<ErrorResponse>): string {
     const message = (error.message || '').toLowerCase();
     if (message.includes('Course is full')) {
-      return 'This course is already at full capacity.';
+      return 'Este curso ya está completo.';
     }
     if (message.includes('already enrolled')) {
-      return 'You are already enrolled in this course.';
+      return 'Ya estás inscripto en este curso.';
     }
     if (message.includes('duplicate')) {
-      return 'A duplicate entry was detected.';
+      return 'Se detectó un registro duplicado.';
     }
-    return error.message || 'A conflict occurred. Please try again.';
+    return error.message || 'Ocurrió un conflicto. Por favor inténtalo de nuevo.';
   }
 
   private handleValidationError(error: Partial<ErrorResponse>): string {
     if (error.message) {
-      return `Validation error: ${error.message}`;
+      return `Error de validación: ${error.message}`;
     }
-    return 'There were validation errors in your request.';
+    return 'Hubo errores de validación en tu solicitud.';
   }
 }

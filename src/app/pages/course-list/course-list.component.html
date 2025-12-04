@@ -3,12 +3,12 @@
     <!-- Header Section -->
     <header class="page-header">
       <h1>Curseando</h1>
-      <p class="subtitle">Discover and enroll in courses to advance your skills</p>
+      <p class="subtitle">Descubrí e inscribite en cursos para mejorar tus habilidades</p>
     </header>
 
     <!-- Filter Section -->
     <div class="filter-section">
-      <label for="difficulty-filter" class="filter-label">Filter by difficulty:</label>
+      <label for="difficulty-filter" class="filter-label">Filtrar por dificultad:</label>
       <select
         id="difficulty-filter"
         class="difficulty-filter"
@@ -21,42 +21,39 @@
       </select>
     </div>
 
-    <!-- Loading State -->
-    <div *ngIf="loading" class="loading-container">
-      <div class="spinner"></div>
-      <p>Loading courses...</p>
-    </div>
-
-    <!-- Error State -->
-    <div *ngIf="error && !loading" class="error-container">
-      <div class="error-card">
-        <h3>Unable to Load Courses</h3>
-        <p>{{ error }}</p>
-        <button class="btn btn-primary" (click)="loadCourses()">Try Again</button>
+    @if (loading) {
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Cargando cursos...</p>
       </div>
-    </div>
-
-    <!-- Empty State -->
-    <div *ngIf="!loading && !error && filteredCourses.length === 0" class="empty-state">
-      <h3>No courses found</h3>
-      <p>Try adjusting your filters or check back later for new courses.</p>
-    </div>
-
-    <!-- Course Grid -->
-    <div *ngIf="!loading && !error && filteredCourses.length > 0" class="courses-grid">
-      <div
-        *ngFor="let course of filteredCourses"
-        class="course-card card"
-        (click)="viewCourse(course.id)"
-        role="button"
-        tabindex="0"
-        (keydown.enter)="viewCourse(course.id)"
-      >
-        <div class="card-header">
-          <span class="difficulty-badge" [ngClass]="getDifficultyClass(course.difficulty)">
-            {{ course.difficulty }}
-          </span>
+    } @else if (error) {
+      <div class="error-container">
+        <div class="error-card">
+          <h3>Error al cargar los cursos</h3>
+          <p>{{ error }}</p>
+          <button class="btn btn-primary" (click)="loadCourses()">Intentar de nuevo</button>
         </div>
+      </div>
+    } @else if (filteredCourses.length === 0) {
+      <div class="empty-state">
+        <h3>No se encontraron cursos</h3>
+        <p>Probá ajustando los filtros o volvé más tarde para ver nuevos cursos.</p>
+      </div>
+    } @else {
+      <div class="courses-grid">
+        @for (course of filteredCourses; track course.id) {
+          <div
+            class="course-card card"
+            (click)="viewCourse(course.id)"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="viewCourse(course.id)"
+          >
+            <div class="card-header">
+              <span class="difficulty-badge" [ngClass]="getDifficultyClass(course.difficulty)">
+                {{ course.difficulty }}
+              </span>
+            </div>
 
         <div class="card-body">
           <h3 class="course-title">{{ course.title }}</h3>
@@ -75,8 +72,8 @@
 
           <div class="course-enrollment">
             <div class="enrollment-info">
-              <span class="enrolled-count">{{ course.enrolledCount }} enrolled</span>
-              <span class="capacity">of {{ course.capacity }}</span>
+              <span class="enrolled-count">{{ course.enrolledCount }} inscriptos</span>
+              <span class="capacity">de {{ course.capacity }}</span>
             </div>
 
             <div
@@ -90,10 +87,12 @@
 
         <div class="card-footer">
           <button class="btn btn-primary" [disabled]="course.seatsLeft === 0">
-            {{ course.seatsLeft === 0 ? 'Course Full' : 'View Details' }}
+            {{ course.seatsLeft === 0 ? 'Curso completo' : 'Ver detalles' }}
           </button>
         </div>
+          </div>
+        }
       </div>
-    </div>
+    }
   </div>
 </div>
