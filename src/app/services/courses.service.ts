@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, map } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { CourseCardDTO, CourseDetailDTO } from '../models/course.model';
+import { ErrorResponse } from '../models/error.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ import { CourseCardDTO, CourseDetailDTO } from '../models/course.model';
 export class CoursesService {
   private apiUrl = `${environment.apiUrl}/courses`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Get paginated list of courses with optional filtering
@@ -25,12 +26,12 @@ export class CoursesService {
       .set('page', page.toString())
       .set('size', size.toString());
 
-    if (difficulty/* && difficulty !== 'ALL'*/) {
+    if (difficulty && difficulty !== 'ALL') {
       params = params.set('difficulty', difficulty);
     }
 
     return this.http.get<{ content: CourseCardDTO[] }>(this.apiUrl, { params }).pipe(
-      map(response => response.content), // Extract the content array
+      map(response => response.content),
       catchError(this.handleError)
     );
   }
@@ -51,26 +52,79 @@ export class CoursesService {
    * @param error HTTP error response
    * @returns Observable error with user-friendly message
    */
-  private handleError(error: any): Observable<never> {
+  private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unexpected error occurred';
+    let status = error.status || 0;
 
     if (error.error instanceof ErrorEvent) {
-      // Client-side or network error
       errorMessage = `Network error: ${error.error.message}`;
     } else {
-      // Backend error
-      if (error.status === 404) {
-        errorMessage = 'Course not found';
-      } else if (error.status === 500) {
-        errorMessage = 'Server error. Please try again later';
-      } else if (error.error?.message) {
-        errorMessage = error.error.message;
-      } else if (error.error?.error) {
-        errorMessage = error.error.error;
+      const body = error.error;
+      const errorResponse: Partial<ErrorResponse> =
+        body && typeof body === 'object' ? (body as Partial<ErrorResponse>) : {};
+
+      status = error.status || errorResponse.status || 500;
+
+      switch (status) {
+        case 400:
+          errorMessage = this.handleBadRequest(errorResponse);
+          break;
+        case 401:
+          errorMessage = 'Authentication required. Please log in again.';
+          break;
+        case 403:
+          errorMessage = 'You do not have permission to perform this action.';
+          break;
+        case 404:
+          errorMessage = this.handleNotFound(errorResponse);
+          break;
+        case 409:
+          errorMessage = this.handleConflict(errorResponse);
+          break;
+        case 422:
+          errorMessage = this.handleValidationError(errorResponse);
+          break;
+        case 500:
+          errorMessage = 'A server error occurred. Please try again later.';
+          break;
+        default:
+          errorMessage = errorResponse.message || error.message || 'An unexpected error occurred';
       }
     }
 
-    console.error('CoursesService Error:', error);
+    console.error(`API Error [${status}]:`, errorMessage, error);
     return throwError(() => new Error(errorMessage));
+  }
+
+  private handleBadRequest(error: Partial<ErrorResponse>): string {
+    if (error.error === 'Validation failed' && error.message) {
+      return `Validation error: ${error.message}`;
+    }
+    return error.message || 'Invalid request. Please check your input.';
+  }
+
+  private handleNotFound(error: Partial<ErrorResponse>): string {
+    return error.message || 'The requested resource was not found.';
+  }
+
+  private handleConflict(error: Partial<ErrorResponse>): string {
+    const message = (error.message || '').toLowerCase();
+    if (message.includes('Course is full')) {
+      return 'This course is already at full capacity.';
+    }
+    if (message.includes('already enrolled')) {
+      return 'You are already enrolled in this course.';
+    }
+    if (message.includes('duplicate')) {
+      return 'A duplicate entry was detected.';
+    }
+    return error.message || 'A conflict occurred. Please try again.';
+  }
+
+  private handleValidationError(error: Partial<ErrorResponse>): string {
+    if (error.message) {
+      return `Validation error: ${error.message}`;
+    }
+    return 'There were validation errors in your request.';
   }
 }

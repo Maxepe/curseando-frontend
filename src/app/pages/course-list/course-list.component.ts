@@ -19,7 +19,6 @@ export class CourseListComponent implements OnInit {
   error: string | null = null;
   selectedDifficulty = 'ALL';
 
-  // Difficulty options for the filter dropdown
   difficulties = [
     { value: 'ALL', label: 'All Levels' },
     { value: 'BEGINNER', label: 'Beginner' },
@@ -36,9 +35,6 @@ export class CourseListComponent implements OnInit {
     this.loadCourses();
   }
 
-  /**
-   * Load courses from the API
-   */
   loadCourses(): void {
     this.loading = true;
     this.error = null;
@@ -49,18 +45,14 @@ export class CourseListComponent implements OnInit {
         this.filteredCourses = courses;
         this.loading = false;
       },
-      error: (err) => {
-        this.error = err.message || 'Failed to load courses';
+      error: (error) => {
+        this.error = error.message;
         this.loading = false;
-        console.error('Error loading courses:', err);
+        console.error('Error loading courses:', error);
       }
     });
   }
 
-  /**
-   * Filter courses by difficulty
-   * @param difficulty Selected difficulty level
-   */
   onFilterChange(difficulty: string): void {
     this.selectedDifficulty = difficulty;
 
@@ -73,19 +65,10 @@ export class CourseListComponent implements OnInit {
     }
   }
 
-  /**
-   * Navigate to course detail page
-   * @param courseId Course ID
-   */
   viewCourse(courseId: number): void {
     this.router.navigate(['/courses', courseId]);
   }
 
-  /**
-   * Get badge CSS class based on difficulty
-   * @param difficulty Course difficulty
-   * @returns CSS class name
-   */
   getDifficultyClass(difficulty: Difficulty): string {
     const classes: Record<Difficulty, string> = {
       [Difficulty.BEGINNER]: 'difficulty-beginner',
