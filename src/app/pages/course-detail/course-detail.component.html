@@ -1,0 +1,121 @@
+<div class="course-detail-container">
+  <div class="container">
+    <button class="btn-back" (click)="goBack()">
+      <span class="back-icon">←</span>
+      Atrás
+    </button>
+
+    <div *ngIf="loading" class="loading-container">
+      <div class="spinner"></div>
+      <p>Cargando...</p>
+    </div>
+
+    <div *ngIf="error && !loading" class="error-container">
+      <div class="error-card">
+        <h2>Error al Cargar la información</h2>
+        <p>{{ error }}</p>
+        <button class="btn btn-primary" (click)="retry()">Intentar de Nuevo</button>
+      </div>
+    </div>
+
+    <div *ngIf="course && !loading && !error" class="course-content">
+      <div class="course-header">
+        <div class="header-top">
+          <span class="difficulty-badge" [ngClass]="getDifficultyClass(course.difficulty)">
+            {{ course.difficulty }}
+          </span>
+          <div class="seats-indicator" [ngClass]="{
+            'seats-full': isFull(),
+            'seats-low': isLowSeats(),
+            'seats-available': !isFull() && !isLowSeats()
+          }">
+            <span *ngIf="isFull()" class="seats-status">Sin Cupos</span>
+            <span *ngIf="isLowSeats()" class="seats-status">Quedan {{ course.seatsLeft }} cupos!</span>
+            <span *ngIf="!isFull() && !isLowSeats()" class="seats-status">{{ course.seatsLeft }} cupos disponibles</span>
+          </div>
+        </div>
+
+        <h1 class="course-title">{{ course.title }}</h1>
+
+        <div class="course-meta">
+          <div class="meta-item">
+            <span class="meta-icon">👨‍🏫</span>
+            <span class="meta-label">Instructor:</span>
+            <span class="meta-value">{{ course.instructor }}</span>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-icon">⏱️</span>
+            <span class="meta-label">Duración:</span>
+            <span class="meta-value">{{ course.duration }}</span>
+          </div>
+
+          <div class="meta-item">
+            <span class="meta-icon">📚</span>
+            <span class="meta-label">Conocimiento Previo Requerido:</span>
+            <span class="meta-value">{{ 'course.requiredKnowledge' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="details-grid">
+        <div class="details-main">
+          <div class="detail-card">
+            <h2>Acerca Del Curso</h2>
+            <p class="course-description">{{ course.description }}</p>
+          </div>
+
+          <div class="detail-card">
+            <h3>Contenido del Curso</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="info-label">Creado:</span>
+                <span class="info-value">{{ formatDate(course.createdAt) }}</span>
+              </div>
+              <div class="info-item" *ngIf="course.updatedAt !== course.createdAt">
+                <span class="info-label">Ultima Actualización:</span>
+                <span class="info-value">{{ formatDate(course.updatedAt) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="details-sidebar">
+          <div class="enrollment-card">
+            <h3>Inscripciones</h3>
+
+            <div class="enrollment-stats">
+              <div class="stat-item">
+                <span class="stat-number">{{ course.enrolledCount }}</span>
+                <span class="stat-label">Inscriptos</span>
+              </div>
+
+              <div class="stat-divider"></div>
+
+              <div class="stat-item">
+                <span class="stat-number">{{ course.capacity }}</span>
+                <span class="stat-label">Límite de cupos</span>
+              </div>
+            </div>
+
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                [style.width.%]="(course.enrolledCount / course.capacity) * 100"
+                [ngClass]="{
+                  'progress-full': isFull(),
+                  'progress-high': course.enrolledCount / course.capacity > 0.8 && !isFull(),
+                  'progress-medium': course.enrolledCount / course.capacity > 0.5 && course.enrolledCount / course.capacity <= 0.8
+                }"
+              ></div>
+            </div>
+
+            <div class="enrollment-form-placeholder">
+              <p class="placeholder-text">Aca va el enrollment form</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
