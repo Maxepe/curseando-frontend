@@ -15,9 +15,11 @@
         [(ngModel)]="selectedDifficulty"
         (change)="onFilterChange(selectedDifficulty)"
       >
-        <option *ngFor="let diff of difficulties" [value]="diff.value">
-          {{ diff.label }}
-        </option>
+        @for (diff of difficulties; track diff.value) {
+          <option [value]="diff.value">
+            {{ diff.label }}
+          </option>
+        }
       </select>
     </div>
 
@@ -93,6 +95,22 @@
           </div>
         }
       </div>
+
+      @if (!loading && !error && !isLastPage && filteredCourses.length > 0) {
+        <div class="load-more-container">
+          <button
+            class="btn btn-secondary load-more-btn"
+            (click)="loadMoreCourses()"
+            [disabled]="loadingMore">
+            @if (loadingMore) {
+              <span class="spinner-small"></span>
+              <span>Cargando...</span>
+            } @else {
+              <span>Mostrar más cursos</span>
+            }
+          </button>
+        </div>
+      }
     }
   </div>
 </div>

@@ -1,10 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, map } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { CourseCardDTO, CourseDetailDTO } from '../models/course.model';
 import { ErrorResponse } from '../models/error.model';
+
+export interface PageResponse<T> {
+  content: T[];
+  last: boolean;
+  totalElements: number;
+  totalPages: number;
+  number: number;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +27,9 @@ export class CoursesService {
    * @param difficulty Optional difficulty filter (BEGINNER, INTERMEDIATE, ADVANCED)
    * @param page Page number (0-indexed)
    * @param size Number of items per page
-   * @returns Observable of course cards array
+   * @returns Observable of paginated course response
    */
-  getCourses(difficulty?: string, page: number = 0, size: number = 20): Observable<CourseCardDTO[]> {
+  getCourses(difficulty?: string, page: number = 0, size: number = 10): Observable<PageResponse<CourseCardDTO>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
@@ -30,8 +38,7 @@ export class CoursesService {
       params = params.set('difficulty', difficulty);
     }
 
-    return this.http.get<{ content: CourseCardDTO[] }>(this.apiUrl, { params }).pipe(
-      map(response => response.content),
+    return this.http.get<PageResponse<CourseCardDTO>>(this.apiUrl, { params }).pipe(
       catchError(this.handleError)
     );
   }

@@ -5,20 +5,25 @@
       Atrás
     </button>
 
-    <div *ngIf="loading" class="loading-container">
-      <div class="spinner"></div>
-      <p>Cargando...</p>
-    </div>
-
-    <div *ngIf="error && !loading" class="error-container">
-      <div class="error-card">
-        <h2>Error al Cargar la información</h2>
-        <p>{{ error }}</p>
-        <button class="btn btn-primary" (click)="retry()">Intentar de Nuevo</button>
+    @if (loading) {
+      <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Cargando...</p>
       </div>
-    </div>
+    }
 
-    <div *ngIf="course && !loading && !error" class="course-content">
+    @if (error && !loading) {
+      <div class="error-container">
+        <div class="error-card">
+          <h2>Error al Cargar la información</h2>
+          <p>{{ error }}</p>
+          <button class="btn btn-primary" (click)="retry()">Intentar de Nuevo</button>
+        </div>
+      </div>
+    }
+
+    @if (course && !loading && !error) {
+      <div class="course-content">
       <div class="course-header">
         <div class="header-top">
           <span class="difficulty-badge" [ngClass]="'difficulty-' + course.difficulty.toLowerCase()">
@@ -29,9 +34,13 @@
             'seats-low': isLowSeats(),
             'seats-available': !isFull() && !isLowSeats()
           }">
-            <span *ngIf="isFull()" class="seats-status">Sin Cupos</span>
-            <span *ngIf="isLowSeats()" class="seats-status">Quedan {{ course.seatsLeft }} cupos!</span>
-            <span *ngIf="!isFull() && !isLowSeats()" class="seats-status">{{ course.seatsLeft }} cupos disponibles</span>
+            @if (isFull()) {
+              <span class="seats-status">Sin Cupos</span>
+            } @else if (isLowSeats()) {
+              <span class="seats-status">Quedan {{ course.seatsLeft }} cupos!</span>
+            } @else {
+              <span class="seats-status">{{ course.seatsLeft }} cupos disponibles</span>
+            }
           </div>
         </div>
 
@@ -72,10 +81,12 @@
                 <span class="info-label">Creado:</span>
                 <span class="info-value">{{ formatDate(course.createdAt) }}</span>
               </div>
-              <div class="info-item" *ngIf="course.updatedAt !== course.createdAt">
-                <span class="info-label">Ultima Actualización:</span>
-                <span class="info-value">{{ formatDate(course.updatedAt) }}</span>
-              </div>
+              @if (course.updatedAt !== course.createdAt) {
+                <div class="info-item">
+                  <span class="info-label">Ultima Actualización:</span>
+                  <span class="info-value">{{ formatDate(course.updatedAt) }}</span>
+                </div>
+              }
             </div>
           </div>
         </div>
@@ -118,6 +129,7 @@
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    }
   </div>
 </div>

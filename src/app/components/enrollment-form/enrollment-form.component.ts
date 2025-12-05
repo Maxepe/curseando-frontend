@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges, AfterViewInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnChanges, SimpleChanges, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { EnrollmentRequest } from '../../models/enrollment.model';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-enrollment-form',
@@ -23,8 +24,8 @@ export class EnrollmentFormComponent implements OnInit, OnChanges, AfterViewInit
 
   enrollmentForm!: FormGroup;
   submitting = false;
-  successMessage: string | null = null;
-  errorMessage: string | null = null;
+
+  private toastService = inject(ToastService);
 
   constructor(
     private fb: FormBuilder,
@@ -49,15 +50,11 @@ export class EnrollmentFormComponent implements OnInit, OnChanges, AfterViewInit
     this.updateFormDisabledState();
   }
 
-  /**
-   * Handle form submission
-   */
   onSubmit(): void {
     if (this.enrollmentForm.invalid || this.submitting || this.isFull) {
       return;
     }
 
-    this.resetMessages();
     this.submitting = true;
     this.updateFormDisabledState();
 
@@ -68,21 +65,16 @@ export class EnrollmentFormComponent implements OnInit, OnChanges, AfterViewInit
 
     this.enrollmentService.enroll(this.courseId, request).subscribe({
       next: (response) => {
-        this.successMessage = `¡Inscripción exitosa! ${response.studentName} se ha inscripto en ${response.courseTitle}`;
+        this.toastService.showSuccess(`¡Inscripción exitosa! ${response.studentName} se ha inscripto en ${response.courseTitle}`);
         this.submitting = false;
         this.updateFormDisabledState();
 
-        // Emit success event to parent component
         this.enrollmentSuccess.emit();
-
-        // Reset form after 3 seconds
-        setTimeout(() => {
-          this.enrollmentForm.reset();
-          this.resetMessages();
-        }, 3000);
+        this.enrollmentForm.reset();
       },
       error: (err) => {
-        this.errorMessage = this.getErrorMessage(err.message);
+        const errorMessage = this.getErrorMessage(err.message);
+        this.toastService.showError(errorMessage);
         this.submitting = false;
         this.updateFormDisabledState();
         console.error('Error enrolling:', err);
@@ -101,11 +93,6 @@ export class EnrollmentFormComponent implements OnInit, OnChanges, AfterViewInit
     }
   }
 
-  /**
-   * Get user-friendly error message
-   * @param errorMessage Error message from backend
-   * @returns User-friendly Spanish error message
-   */
   private getErrorMessage(errorMessage: string): string {
     const lowerMessage = errorMessage.toLowerCase();
 
@@ -171,10 +158,5 @@ export class EnrollmentFormComponent implements OnInit, OnChanges, AfterViewInit
     }
 
     return 'Campo inválido';
-  }
-
-  private resetMessages(): void {
-    this.successMessage = null;
-    this.errorMessage = null;
   }
 }

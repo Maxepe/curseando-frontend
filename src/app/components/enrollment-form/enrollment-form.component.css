@@ -4,49 +4,6 @@
   gap: var(--spacing-lg);
 }
 
-.alert {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.alert-icon {
-  font-size: var(--font-size-xl);
-  font-weight: bold;
-}
-
-.alert-text {
-  flex: 1;
-}
-
-.alert-success {
-  background-color: var(--success);
-  color: white;
-  border-left: 4px solid #0f7c38;
-}
-
-.alert-error {
-  background-color: var(--error);
-  color: white;
-  border-left: 4px solid #c62828;
-}
-
 .form-group {
   display: flex;
   flex-direction: column;
@@ -145,10 +102,6 @@
 @media (max-width: 768px) {
   .enrollment-form {
     gap: var(--spacing-md);
-  }
-
-  .alert {
-    font-size: var(--font-size-sm);
   }
 
   .btn-primary {

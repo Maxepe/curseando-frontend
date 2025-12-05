@@ -132,12 +132,21 @@ button:disabled, .btn:disabled {
 }
 
 .btn-secondary {
-  background-color: var(--gray-200);
-  color: var(--gray-900);
+  background-color: white;
+  color: var(--primary-blue);
+  border: 2px solid var(--primary-blue);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background-color: var(--gray-300);
+  background-color: var(--primary-blue);
+  color: white;
+  text-decoration: none;
+}
+
+.btn-secondary:disabled {
+  border-color: var(--gray-300);
+  color: var(--gray-400);
+  background-color: white;
 }
 
 .card {

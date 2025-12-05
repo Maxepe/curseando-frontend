@@ -35,7 +35,6 @@ export class EnrollmentService {
    */
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unexpected error occurred';
-    debugger
 
     if (error.error instanceof ErrorEvent || 
       error.message.toLowerCase().includes('network error') || 

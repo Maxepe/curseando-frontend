@@ -1,16 +1,4 @@
 <form [formGroup]="enrollmentForm" (ngSubmit)="onSubmit()" class="enrollment-form">
-  <!-- Success Message Alert -->
-  <div *ngIf="successMessage" class="alert alert-success">
-    <span class="alert-icon">✓</span>
-    <span class="alert-text">{{ successMessage }}</span>
-  </div>
-
-  <!-- Error Message Alert -->
-  <div *ngIf="errorMessage" class="alert alert-error">
-    <span class="alert-icon">✕</span>
-    <span class="alert-text">{{ errorMessage }}</span>
-  </div>
-
   <div class="form-group">
     <label for="fullName">Nombre Completo *</label>
     <input
