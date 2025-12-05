@@ -24,7 +24,7 @@ export class EnrollmentService {
       `${this.apiUrl}/${courseId}/enroll`,
       request
     ).pipe(
-      catchError(this.handleError)
+      catchError((error) => this.handleError(error))
     );
   }
 

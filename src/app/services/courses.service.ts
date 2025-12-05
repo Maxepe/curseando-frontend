@@ -39,7 +39,7 @@ export class CoursesService {
     }
 
     return this.http.get<PageResponse<CourseCardDTO>>(this.apiUrl, { params }).pipe(
-      catchError(this.handleError)
+      catchError((error) => this.handleError(error))
     );
   }
 
@@ -50,7 +50,7 @@ export class CoursesService {
    */
   getCourse(id: number): Observable<CourseDetailDTO> {
     return this.http.get<CourseDetailDTO>(`${this.apiUrl}/${id}`).pipe(
-      catchError(this.handleError)
+      catchError((error) => this.handleError(error))
     );
   }
 
